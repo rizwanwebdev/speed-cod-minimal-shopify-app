@@ -1,22 +1,13 @@
 {
-  "name": "speed-popup",
+  "name": "shopify-cod-app",
   "version": "1.0.0",
-  "license": "UNLICENSED",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "shopify": "shopify",
-    "build": "shopify app build",
-    "dev": "shopify app dev",
-    "info": "shopify app info",
-    "generate": "shopify app generate",
-    "deploy": "shopify app deploy"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {},
-  "trustedDependencies": [
-    "@shopify/plugin-cloudflare"
-  ],
-  "author": "kali",
-  "private": true,
-  "workspaces": [
-    "extensions/*"
-  ]
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
