@@ -1,0 +1,24 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "19fd229d75e4780c188c35e92a8839ba"
+name = "speed-popup"
+application_url = "https://private-shopify-cod-app.vercel.app"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,write_customers,read_orders,write_orders,read_products,write_products"
+
+[webhooks]
+api_version = "2026-04"
+
+[auth]
+redirect_urls = [ "https://private-shopify-cod-app.vercel.app/api/auth" ]
+
+[app_proxy]
+url = "https://private-shopify-cod-app.vercel.app/api/create-order"
+subpath = "cod"
+prefix = "apps"
+
+[build]
+automatically_update_urls_on_dev = true
