@@ -7,15 +7,6 @@
     {{ block.settings.title }}
   </button>
 
-  {%- assign discount_percent = block.settings.dis_percentage | default: 10 -%}
-  {%- assign unit_price_cents = product.price -%}
-
-  {%- assign discount_multiplier = 100.0 | minus: discount_percent | divided_by: 100.0 -%}
-
-  {%- assign two_pack_price_total = unit_price_cents | times: 2 -%}
-
-  {%- assign two_pack_price_cents = two_pack_price_total | times: discount_multiplier -%}
-
   {% if block.settings.allow_quantity_picker %}
     {% if block.settings.simple_picker and block.settings.allow_quantity_picker %}
       <div class="packs-field" style="--cod-pack:{{ block.settings.packs_color }}">
@@ -23,7 +14,7 @@
           <div class="pack-quantity">
             <input
               type="radio"
-              data-price="Rs. {{ product.price | money_without_currency }}"
+              data-price="{{ product.price | money_without_currency }}"
               form="codOrderForm"
               value="1"
               name="quantity"
@@ -40,7 +31,7 @@
           <div class="pack-quantity">
             <input
               type="radio"
-              data-price="Rs. {{ two_pack_price_cents | money_without_currency }}"
+              data-price="{{ block.settings.2packs_price | money_without_currency }}"
               form="codOrderForm"
               value="2"
               name="quantity"
@@ -52,11 +43,11 @@
           </div>
           <div class="dis-prices">
             <span class="pack-price large">
-              {{ two_pack_price_cents | money_without_currency }}
+              {{ block.settings.2packs_price | money_without_currency }}
             </span>
 
             <span class="total-price">
-              {{ two_pack_price_total | money_without_currency }}
+              {{ block.settings.2packs_price_compare | money_without_currency }}
             </span>
           </div>
           <span class="pack-badge">{{ block.settings.badge_text }}</span>
@@ -74,7 +65,7 @@
             hidden
             value="1"
             checked
-            data-price="Rs. {{ product.price | money_without_currency }}"
+            data-price="{{ product.price | money_without_currency }}"
           >
           <p>1 Pack</p>
           <img src="{{ block.settings.box_image_1 | image_url: height: 100 }}" alt="Pack 1" width="auto" height="100">
@@ -90,12 +81,12 @@
             name="quantity"
             hidden
             value="2"
-            data-price="Rs. {{ two_pack_price_cents | money_without_currency }}"
+            data-price="{{ block.settings.2packs_price | money_without_currency }}"
           >
           <p class="p-margin">2 Packs</p>
           <img src="{{ block.settings.box_image_2 | image_url: height: 100 }}" alt="Pack 2" width="auto" height="100">
-          <p class="dismised">Rs. {{ two_pack_price_total | money_without_currency }}</p>
-          <p>Rs. {{ two_pack_price_cents | money_without_currency }}</p>
+          <p class="dismised">Rs. {{ block.settings.2packs_price_compare | money_without_currency }}</p>
+          <p>Rs. {{ block.settings.2packs_price | money_without_currency }}</p>
         </label>
         <label class="q-box" style="--display:{{ block.settings.display_badge }}">
           <div class="q-badge">Best Value</div>
@@ -106,12 +97,12 @@
             name="quantity"
             hidden
             value="3"
-            data-price="Rs. {{ block.settings.full_price }}"
+            data-price="{{ block.settings.3packs_price }}"
           >
           <p class="p-margin">3 Packs</p>
           <img src="{{ block.settings.box_image_3 | image_url: height: 100 }}" alt="Pack 3" width="auto" height="100">
-          <p class="dismised">Rs. {{ block.settings.full_price_compare }}</p>
-          <p>Rs. {{ block.settings.full_price }}</p>
+          <p class="dismised">Rs. {{ block.settings.3packs_price_compare }}</p>
+          <p>Rs. {{ block.settings.3packs_price }}</p>
         </label>
       </div>
     {% endif %}
@@ -387,15 +378,27 @@
     },
     {
       "type": "text",
-      "id": "full_price_compare",
-      "label": "Price Compare At",
+      "id": "3packs_price_compare",
+      "label": "Price Compare At 3 Packs",
       "default": "5000"
     },
     {
       "type": "text",
-      "id": "full_price",
-      "label": "Full Course Price",
+      "id": "3packs_price",
+      "label": "3 Packs Price",
       "default": "3800"
+    },
+    {
+      "type": "text",
+      "id": "2packs_price_compare",
+      "label": "Price Compare At 2 Packs",
+      "default": "4000"
+    },
+    {
+      "type": "text",
+      "id": "2packs_price",
+      "label": "2 Packs Price",
+      "default": "2800"
     },
     {
       "type": "text",
@@ -415,21 +418,7 @@
       "label": "Badge 2 Text",
       "default": "Saved RS. 400"
     },
-    {
-      "type": "range",
-      "id": "dis_percentage",
-      "label": "Percentage",
-      "default": 10,
-      "min": 0,
-      "max": 100,
-      "step": 1
-    },
-    {
-      "type": "text",
-      "id": "dis_code",
-      "label": "Discount Code",
-      "default": "PACK2"
-    },
+
     {
       "type": "color",
       "id": "packs_color",

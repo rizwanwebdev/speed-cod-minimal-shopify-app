@@ -20,10 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // console.error("Required COD elements not found");
     return;
   }
+  let newPrice = ""
   radios.forEach((radio) => {
     radio.addEventListener("change", function () {
       if (this.checked) {
         priceDisplay.textContent = this.dataset.price;
+        newPrice = this.dataset.price;
       }
     });
   });
@@ -231,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Fill fields
           if (addressField) {
-            addressField.value = `${fullAddress} / ${latitude},${longitude} `;
+            addressField.value = fullAddress;
           }
 
           if (cityField) {
@@ -295,12 +297,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(form).entries());
-
+    console.log(formData)
     // Basic validation
     // Add quantity only if it doesn't exist
     if (!("quantity" in formData) || !formData.quantity) {
+      if (formData.quantity > 1) {
+        formData.price = price;
+      }
       formData.quantity = 1;
     }
+    formData.price = newPrice || "";
     if (userLatitude && userLongitude) {
       formData.note = `${userLatitude},${userLongitude}`;
     } else {
