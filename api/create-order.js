@@ -95,8 +95,8 @@ export default async function handler(req, res) {
       city,
       variantId,
       quantity,
-      dis_percent,
-      discount_code,
+      price,
+      note,
     } = body || {};
 
     if (!name || !phone || !address || !city || !variantId || !quantity) {
@@ -120,7 +120,6 @@ export default async function handler(req, res) {
 
     // ✅ Normalize phone to Shopify's canonical format (e.g. "0309..." -> "92309...")
     const normalizedPhone = normalizePkPhone(phone);
-    const syntheticEmail = `cod-${normalizedPhone}@test.com`;
 
     console.log("Normalized data", {
       firstName,
@@ -128,7 +127,6 @@ export default async function handler(req, res) {
       variantGid,
       phone,
       normalizedPhone,
-      syntheticEmail,
       quantity,
     });
 
@@ -195,15 +193,60 @@ export default async function handler(req, res) {
       customerPhone: existingCustomer?.defaultPhoneNumber?.phoneNumber || null,
     });
 
-    // 4. DUPLICATE CHECK (10-minute rule by customer + variant)
-    if (existingCustomer) {
+    let customerId = existingCustomer?.id;
+
+    // 5. CUSTOMER CREATION (if not exists) - Create with phone only
+    if (!customerId) {
+      console.log("No existing customer found. Creating new customer with phone only...");
+      const customerCreateMutation = `
+        mutation customerCreate($input: CustomerInput!) {
+          customerCreate(input: $input) {
+            customer {
+              id
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `;
+
+      const customerInput = {
+        firstName,
+        lastName,
+        phone: normalizedPhone,
+      };
+
+      const customerCreateRes = await fetch(
+        `https://${ENV_SHOP_NAME}/admin/api/2026-01/graphql.json`,
+        {
+          method: "POST",
+          headers: {
+            "X-Shopify-Access-Token": ENV_ACCESS_TOKEN,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: customerCreateMutation,
+            variables: { input: customerInput },
+          }),
+        },
+      );
+
+      const customerCreateData = await customerCreateRes.json();
+      if (customerCreateData.data?.customerCreate?.customer?.id) {
+        customerId = customerCreateData.data.customerCreate.customer.id;
+        console.log("New customer created successfully:", customerId);
+      } else {
+        console.error("Customer creation failed:", customerCreateData.data?.customerCreate?.userErrors);
+        // Fallback or handle error if needed. For now, we'll continue and see if orderCreate can handle it or fail gracefully.
+      }
+    }
+
+    // 6. DUPLICATE CHECK (10-minute rule by customer + variant)
+    if (customerId) {
       const TEN_MINUTES = 10 * 60 * 1000;
       const tenMinutesAgoDate = new Date(Date.now() - TEN_MINUTES);
-
-      console.log("Duplicate check window", {
-        tenMinutesAgo: tenMinutesAgoDate.toISOString(),
-        now: new Date().toISOString(),
-      });
 
       const duplicateQuery = `
         query CheckDuplicateOrder($query: String!) {
@@ -227,17 +270,8 @@ export default async function handler(req, res) {
         }
       `;
 
-      // existingCustomer.id = "gid://shopify/Customer/56501169"
-      const customerGid = existingCustomer.id;
-      const customerNumericId = customerGid.split("/").pop(); // "56501169"
-
-      // Now build the search query using numeric ID
+      const customerNumericId = customerId.split("/").pop();
       const orderSearchQuery = `customer_id:${customerNumericId}`;
-
-      console.log("Duplicate orders GraphQL request", {
-        orderSearchQuery,
-        endpoint: `https://${ENV_SHOP_NAME}/admin/api/2026-01/graphql.json`,
-      });
 
       const duplicateRes = await fetch(
         `https://${ENV_SHOP_NAME}/admin/api/2026-01/graphql.json`,
@@ -254,44 +288,18 @@ export default async function handler(req, res) {
         },
       );
 
-      console.log("Duplicate response status", duplicateRes.status);
-
       const duplicateData = await duplicateRes.json();
-      console.log(
-        "Duplicate data from Shopify (by customer):",
-        JSON.stringify(duplicateData, null, 2),
-      );
-
-      if (duplicateData.errors) {
-        console.error("Duplicate query GraphQL errors", duplicateData.errors);
-      }
-
       const existingOrders = duplicateData?.data?.orders?.edges || [];
-      console.log(
-        "Duplicate check - existingOrders length (by customer)",
-        existingOrders.length,
-      );
 
       for (const edge of existingOrders) {
         const order = edge.node;
         const createdAtDate = new Date(order.createdAt);
-
         const hasSameVariant = order.lineItems.edges.some(
           (item) => item.node.variant?.id === variantGid,
         );
         const isWithin10Min = createdAtDate >= tenMinutesAgoDate;
 
-        console.log("Checking existing order for duplicate", {
-          orderId: order.id,
-          createdAt: order.createdAt,
-          hasSameVariant,
-          isWithin10Min,
-        });
-
         if (hasSameVariant && isWithin10Min) {
-          console.log("Duplicate order detected. Returning early.", {
-            orderId: order.id,
-          });
           return res.status(200).json({
             success: true,
             duplicate: true,
@@ -300,60 +308,43 @@ export default async function handler(req, res) {
           });
         }
       }
-
-      console.log(
-        "No duplicate order found for this customer + variant within 10 minutes",
-      );
-    } else {
-      console.log(
-        "No existing customer found for normalized phone; skipping duplicate check.",
-      );
     }
 
-    // 5. ORDER CREATION (attach existing customer or create new one)
-    const mutation = `
-      mutation orderCreate($order: OrderCreateOrderInput!) {
-        orderCreate(order: $order) {
-          userErrors {
-            field
-            message
-          }
-          order {
-            id
-            displayFinancialStatus
-          }
-        }
-      }
-    `;
+    // 7. DYNAMIC PRICING LOGIC
+    const qtyNum = Number(quantity);
+    const passedPrice = Number(price);
+
+    const lineItem = {
+      variantId: variantGid,
+      quantity: qtyNum,
+      requiresShipping: true,
+    };
+
+    // Override price for quantity > 1 if a price was provided from the frontend
+    if (qtyNum > 1 && passedPrice > 0) {
+      // Calculate unit price: Shopify priceSet on line items is per-unit.
+      const unitPrice = (passedPrice / qtyNum).toFixed(2);
+      lineItem.priceSet = {
+        shopMoney: {
+          amount: unitPrice,
+          currencyCode: "PKR",
+        },
+      };
+    }
 
     const orderInput = {
-      lineItems: [
-        {
-          variantId: variantGid,
-          quantity: Number(quantity),
-          requiresShipping: true,
-        },
-      ],
-      customer: existingCustomer
+      lineItems: [lineItem],
+      customer: customerId
         ? {
-          // Attach to existing customer by ID
           toAssociate: {
-            id: existingCustomer.id,
+            id: customerId,
           },
         }
-        : {
-          // Create a new customer (must include email for toUpsert)
-          toUpsert: {
-            firstName,
-            lastName,
-            phone: normalizedPhone, // "92..." form
-            email: syntheticEmail,
-          },
-        },
+        : null, // Should have a customerId at this point
       shippingAddress: {
         firstName,
         lastName,
-        phone, // original local format is fine here
+        phone,
         address1: address,
         city,
         countryCode: "PK",
@@ -382,35 +373,29 @@ export default async function handler(req, res) {
       financialStatus: "PENDING",
     };
 
-    if (Number(quantity) === 2 && dis_percent && discount_code) {
-      console.log("Applying discount code", {
-        quantity,
-        dis_percent,
-        discount_code,
-      });
-      orderInput.discountCode = {
-        itemPercentageDiscountCode: {
-          percentage: Number(dis_percent),
-          code: String(discount_code),
-        },
-      };
-    }
-    if (Number(quantity) === 3) {
-      console.log("Applying discount code", {
-        quantity,
-      });
-      orderInput.discountCode = {
-        itemPercentageDiscountCode: {
-          percentage: 33,
-          code: "COD3",
-        },
-      };
+    if (note) {
+      orderInput.note = String(note);
     }
 
     console.log(
       "Final orderInput to Shopify:",
       JSON.stringify(orderInput, null, 2),
     );
+
+    const orderCreateMutation = `
+      mutation orderCreate($order: OrderCreateOrderInput!) {
+        orderCreate(order: $order) {
+          userErrors {
+            field
+            message
+          }
+          order {
+            id
+            displayFinancialStatus
+          }
+        }
+      }
+    `;
 
     const shopifyRes = await fetch(
       `https://${ENV_SHOP_NAME}/admin/api/2026-01/graphql.json`,
@@ -421,7 +406,7 @@ export default async function handler(req, res) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          query: mutation,
+          query: orderCreateMutation,
           variables: { order: orderInput },
         }),
       },
