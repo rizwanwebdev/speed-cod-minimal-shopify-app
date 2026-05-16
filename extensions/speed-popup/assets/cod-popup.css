@@ -455,6 +455,11 @@ body {
   padding: 0;
 }
 
+.box-radio {
+  appearance: none;
+  display: none;
+}
+
 .q-box:has(.box-radio:checked) {
   border-color: blue;
 }

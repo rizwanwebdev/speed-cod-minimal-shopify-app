@@ -105,27 +105,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Function to track Purchase with retry logic
   function trackMetaPixelPurchaseWithRetry(formData, resultOrderId) {
     if (typeof fbq === "function") {
-      // console.log("fbq defined for Purchase. Event sent.");
+      // Use the actual total price (including bundle overrides) for the purchase value
+      const purchaseValue = parseFloat(formData.price || formData.product_price || "0");
+
       const eventData = {
-        value: parseFloat(formData.product_price || "0"),
+        value: purchaseValue,
         currency: "PKR",
-        content_ids: [formData.variantId], // Assuming formData.variantId is available
+        content_ids: [formData.variantId],
         content_type: "product",
       };
       fbq("track", "Purchase", eventData);
-      // console.log("Meta Pixel Purchase event fired with data:", eventData);
-      // // Google Analytics tracking - moved here for consistency with fbq check
-      // if (typeof gtag === "function") {
-      //   gtag("event", "purchase", {
-      //     transaction_id: resultOrderId,
-      //     value: eventData.value,
-      //     currency: eventData.currency,
-      //   });
-      //   // console.log("Google Analytics Purchase event fired.");
-      // }
+      console.log("Meta Pixel Purchase event fired with data:", eventData);
     } else {
       // console.log("fbq not defined yet, retrying Purchase track in 200ms...");
       setTimeout(
@@ -298,20 +290,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const formData = Object.fromEntries(new FormData(form).entries());
     console.log(formData)
-    // Basic validation
-    // Add quantity only if it doesn't exist
-    if (!("quantity" in formData) || !formData.quantity) {
-      if (formData.quantity > 1) {
-        formData.price = price;
-      }
-      formData.quantity = 1;
+    // Ensure quantity defaults to 1 if not selected
+    if (!formData.quantity) {
+      formData.quantity = "1";
     }
-    formData.price = newPrice || "";
-    if (userLatitude && userLongitude) {
-      formData.note = `${userLatitude},${userLongitude}`;
-    } else {
-      formData.note = "";
-    }
+
+    // Set the price: use the selected bundle price (newPrice) or fallback to base product price
+    formData.price = newPrice || formData.product_price || "";
+
+    // Send only coordinates in the note field if available, otherwise empty
+    formData.note = (userLatitude && userLongitude) ? `${userLatitude},${userLongitude}` : "";
 
     if (!formData.name || !formData.phone || !formData.address) {
       showMessage("error", "Please fill in all required fields");

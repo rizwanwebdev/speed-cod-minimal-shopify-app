@@ -2,7 +2,7 @@
 
 client_id = "19fd229d75e4780c188c35e92a8839ba"
 name = "speed-popup"
-application_url = "https://private-shopify-cod-app.vercel.app"
+application_url = "https://speed-cod-minimal-shopify-app.vercel.app"
 embedded = true
 
 [access_scopes]
@@ -13,10 +13,11 @@ scopes = "read_customers,write_customers,read_orders,write_orders,read_products,
 api_version = "2026-04"
 
 [auth]
-redirect_urls = [ "https://private-shopify-cod-app.vercel.app/api/auth" ]
+redirect_urls = [ "https://speed-cod-minimal-shopify-app.vercel.app/api/auth" ]
+# redirect_urls = [ "https://private-shopify-cod-app.vercel.app/api/auth" ]
 
 [app_proxy]
-url = "https://private-shopify-cod-app.vercel.app/api/create-order"
+url = "https://speed-cod-minimal-shopify-app.vercel.app/api/create-order"
 subpath = "cod"
 prefix = "apps"
 
