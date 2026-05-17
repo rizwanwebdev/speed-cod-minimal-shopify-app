@@ -93,46 +93,40 @@
           <p class="dismised">Rs. {{ product.compare_at_price | money_without_currency | remove: ',' }}</p>
           <p>Rs. {{ product.price | money_without_currency | remove: ',' }}</p>
         </label>
-        <label class="q-box" style="--display:{{ block.settings.display_badge }}">
-          <div class="q-badge">{{ badge_text }}</div>
-          <input
-            form="codOrderForm"
-            type="radio"
-            class="box-radio dynamic-radio"
-            name="quantity"
-            hidden
-            value="2"
-            data-price="{{ price_2 | remove: ',' }}"
-          >
-          <p class="p-margin">2 Packs</p>
-          {% if image_2 %}
+        {% if image_2 %}
+          <label class="q-box">
+            <input
+              form="codOrderForm"
+              type="radio"
+              class="box-radio dynamic-radio"
+              name="quantity"
+              hidden
+              value="2"
+              data-price="{{ price_2 | remove: ',' }}"
+            >
+            <p class="p-margin">2 Packs</p>
             <img src="{{ image_2 | image_url: height: 100 }}" alt="Pack 2" width="auto" height="100">
-          {% else %}
-            <img src="{{ product.featured_image | image_url: height: 100 }}" alt="Pack 2" width="auto" height="100">
-          {% endif %}
-          <p class="dismised">Rs. {{ price_compare_2 | remove: ',' }}</p>
-          <p>Rs. {{ price_2 | remove: ',' }}</p>
-        </label>
-        <label class="q-box" style="--display:{{ block.settings.display_badge }}">
-          <div class="q-badge">Best Value</div>
-          <input
-            form="codOrderForm"
-            type="radio"
-            class="box-radio dynamic-radio"
-            name="quantity"
-            hidden
-            value="3"
-            data-price="{{ price_3 | remove: ',' }}"
-          >
-          <p class="p-margin">3 Packs</p>
-          {% if image_3 %}
+            <p class="dismised">Rs. {{ price_compare_2 | remove: ',' }}</p>
+            <p>Rs. {{ price_2 | remove: ',' }}</p>
+          </label>
+        {% endif %}
+        {% if image_3 %}
+          <label class="q-box">
+            <input
+              form="codOrderForm"
+              type="radio"
+              class="box-radio dynamic-radio"
+              name="quantity"
+              hidden
+              value="3"
+              data-price="{{ price_3 | remove: ',' }}"
+            >
+            <p class="p-margin">3 Packs</p>
             <img src="{{ image_3 | image_url: height: 100 }}" alt="Pack 3" width="auto" height="100">
-          {% else %}
-            <img src="{{ product.featured_image | image_url: height: 100 }}" alt="Pack 3" width="auto" height="100">
-          {% endif %}
-          <p class="dismised">Rs. {{ price_compare_3 | remove: ',' }}</p>
-          <p>Rs. {{ price_3 | remove: ',' }}</p>
-        </label>
+            <p class="dismised">Rs. {{ price_compare_3 | remove: ',' }}</p>
+            <p>Rs. {{ price_3 | remove: ',' }}</p>
+          </label>
+        {% endif %}
       </div>
     {% endif %}
   {% endif %}
