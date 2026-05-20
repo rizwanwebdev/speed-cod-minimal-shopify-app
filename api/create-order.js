@@ -1,4 +1,4 @@
-// Helper: normalize Pakistan phone numbers to Shopify's canonical format
+// Helper: normalize Pakistan phone numbers to Shopify's canonical format -- Speed COD
 function normalizePkPhone(raw) {
   const digits = String(raw).replace(/\D/g, "");
 
