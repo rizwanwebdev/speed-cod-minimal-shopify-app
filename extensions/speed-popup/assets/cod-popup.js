@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageClose = document.querySelector("#message-close");
   const messageIcon = document.querySelector(".message-icon");
   const messageHeading = document.querySelector(".message-heading");
+  const whatsappBtn = document.getElementById("whatsapp-btn");
+
   document.body.appendChild(messagePopup);
 
   const successIcon = `
@@ -355,11 +357,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Success
-      const successMsg =
-        result.message ||
-        (result.orderId
-          ? `Order #${result.orderId} placed successfully!`
-          : "Order placed successfully!");
+      let successMsg = result.message || "Order placed successfully!";
+      if (result.duplicate && result.orderName) {
+        successMsg = `Order ${result.orderName} already placed within 10 minutes.`;
+      } else if (result.orderName) {
+        successMsg = `Order ${result.orderName} placed successfully!`;
+      } else if (result.orderId) {
+        const shortId = result.orderId.split("/").pop();
+        successMsg = `Order #${shortId} placed successfully!`;
+      }
+
+      if (whatsappBtn && result.orderName) {
+        try {
+          const url = new URL(whatsappBtn.href);
+          const baseUrl = `${url.origin}${url.pathname}`;
+          whatsappBtn.href = `${baseUrl}?text=order%20no.%20${encodeURIComponent(result.orderName)}`;
+        } catch (e) {
+          whatsappBtn.href = `https://wa.me/923217182164?text=order%20no.%20${encodeURIComponent(result.orderName)}`;
+        }
+      }
 
       showMessage("success", successMsg);
 
