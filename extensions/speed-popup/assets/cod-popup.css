@@ -21,7 +21,8 @@ body {
 }
 
 .customer-note {
-  color: red;
+  color: #000000;
+  font-size: 20px;
 }
 
 .font-semi {
@@ -44,7 +45,7 @@ body {
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  background: #7762a8;
+  background: #6a1c1c;
   color: white;
   font-weight: 600;
 }

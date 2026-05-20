@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
           autoFillBtn.disabled = false;
 
           setTimeout(() => {
-            autoFillBtn.textContent = "Auto Fill Address";
+            autoFillBtn.textContent = "Auto Fill Location With GPS";
           }, 2000);
         }
       },
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
         autoFillBtn.textContent = "Location Failed";
 
         setTimeout(() => {
-          autoFillBtn.textContent = "Auto Fill Address";
+          autoFillBtn.textContent = "Auto Fill Location With GPS";
         }, 2000);
       },
       {

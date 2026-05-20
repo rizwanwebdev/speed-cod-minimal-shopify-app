@@ -3,7 +3,7 @@
     Use the concrete app namespace discovered via GraphQL.
     Stable per app installation on this store.
   {% endcomment %}
-  {% assign app_ns = "app--362596007937" %}
+  {% assign app_ns = 'app--362596007937' %}
   {% assign app_mf = product.metafields[app_ns] %}
 
   {% assign image_1 = app_mf.image_1 | default: product.featured_image %}
@@ -210,6 +210,8 @@
         <div class="customer-note rtl">
           براہِ کرم اپنا مکمل پتہ اور شہر کا نام واضح طور پر درج کریں تاکہ ہم آپ کا آرڈر آسانی اور بروقت آپ کے درست
           ایڈریس پر ڈیلیور کر سکیں۔
+          <br>
+          یا درست پتہ شامل کرنے کے لیے نیچے آٹو فل لوکیشن بٹن پر کلک کریں۔
         </div>
 
         <form id="codOrderForm">
@@ -269,7 +271,9 @@
                 rows="6"
               ></textarea>
             </div>
-            <button type="button" class="auto-fill" id="auto-fill-address">Auto Fill Addres</button>
+            <button type="button" class="auto-fill btn-wobble" id="auto-fill-address">
+              Auto Fill Location with GPS
+            </button>
           </fieldset>
           <fieldset>
             <label for="cod-city">City *</label>
