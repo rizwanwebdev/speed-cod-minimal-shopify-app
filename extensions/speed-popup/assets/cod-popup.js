@@ -327,10 +327,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       let result;
+
       try {
         result = await res.json();
+        console.log(result)
       } catch (parseError) {
         const text = await res.text().catch(() => "");
+        console.log(text)
         // console.log("Raw response text:", text);
         // console.error("Failed to parse JSON from server:", parseError);
         throw new Error(`Server returned invalid data. Status: ${res.status}`);
