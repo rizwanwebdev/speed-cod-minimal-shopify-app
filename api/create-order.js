@@ -254,6 +254,7 @@ export default async function handler(req, res) {
             edges {
               node {
                 id
+                name
                 createdAt
                 lineItems(first: 10) {
                   edges {
@@ -305,6 +306,7 @@ export default async function handler(req, res) {
             duplicate: true,
             message: "Order already placed within 10 minutes.",
             orderId: order.id,
+            orderName: order.name,
           });
         }
       }
@@ -391,6 +393,7 @@ export default async function handler(req, res) {
           }
           order {
             id
+            name
             displayFinancialStatus
           }
         }
@@ -451,6 +454,7 @@ export default async function handler(req, res) {
       success: true,
       duplicate: false,
       orderId: result.order.id,
+      orderName: result.order.name,
       financialStatus: result.order.displayFinancialStatus,
       message: "Order placed successfully.",
     });
