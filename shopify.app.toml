@@ -1,86 +1,105 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "19fd229d75e4780c188c35e92a8839ba"
-name = "speed-popup"
-application_url = "https://speed-cod-minimal-shopify-app.vercel.app"
+client_id = "1e8160e7e61cf433af4f70502185288e"
+name = "speed-test"
+application_url = "https://pak-dawakhana-app.vercel.app"
 embedded = true
-
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_customers,write_customers,read_orders,write_orders,read_products,write_products"
-
-[webhooks]
-api_version = "2026-04"
-
-[auth]
-redirect_urls = [ "https://speed-cod-minimal-shopify-app.vercel.app/api/auth" ]
-# redirect_urls = [ "https://private-shopify-cod-app.vercel.app/api/auth" ]
-
-[app_proxy]
-url = "https://speed-cod-minimal-shopify-app.vercel.app/api/create-order"
-subpath = "cod"
-prefix = "apps"
 
 [build]
 automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2026-07"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,read_orders,read_products,write_customers,write_orders,write_products"
+
+[auth]
+redirect_urls = [ "https://pak-dawakhana-app.vercel.app/api/auth" ]
+
+[app_proxy]
+url = "https://pak-dawakhana-app.vercel.app/api/create-order"
+subpath = "cod"
+prefix = "apps"
 
 [product.metafields.app.image_1]
 name = "Single Pack Image"
 type = "file_reference"
 description = "Optional override for the single pack image."
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.image_1.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.price_2]
 name = "2 Packs Price"
 type = "number_decimal"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.price_2.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.price_compare_2]
 name = "2 Packs Compare At Price"
 type = "number_decimal"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.price_compare_2.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.image_2]
 name = "2 Packs Image"
 type = "file_reference"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.image_2.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.price_3]
 name = "3 Packs Price"
 type = "number_decimal"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.price_3.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.price_compare_3]
 name = "3 Packs Compare At Price"
 type = "number_decimal"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.price_compare_3.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.image_3]
 name = "3 Packs Image"
 type = "file_reference"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.image_3.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.badge_text]
 name = "Bundle Badge Text"
 type = "single_line_text_field"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.badge_text.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.info_badge_1]
 name = "Info Badge 1"
 type = "single_line_text_field"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.info_badge_1.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"
 
 [product.metafields.app.info_badge_2]
 name = "Info Badge 2"
 type = "single_line_text_field"
-access.admin = "merchant_read_write"
-access.storefront = "public_read"
+
+  [product.metafields.app.info_badge_2.access]
+  admin = "merchant_read_write"
+  storefront = "public_read"

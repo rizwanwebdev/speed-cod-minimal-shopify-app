@@ -2,8 +2,23 @@
   {% comment %}
     Use the concrete app namespace discovered via GraphQL.
     Stable per app installation on this store.
+    Use query below and change product it eg. 8180639531097
+
+    query GetAppNamespace {
+      product(id: "gid://shopify/Product/8180639531097") {
+        metafields(first: 1, namespace: "$app") {
+          edges {
+            node {
+              namespace
+            }
+          }
+        }
+      }
+    }
+
+
   {% endcomment %}
-  {% assign app_ns = 'app--362596007937' %}
+  {% assign app_ns = 'app--408590942209' %}
   {% assign app_mf = product.metafields[app_ns] %}
 
   {% assign image_1 = app_mf.image_1 | default: product.featured_image %}
@@ -90,7 +105,9 @@
           >
           <p>1 Pack</p>
           <img src="{{ image_1 | image_url: height: 100 }}" alt="Pack 1" width="auto" height="100">
-          <p class="dismised">Rs. {{ product.compare_at_price | money_without_currency | remove: ',' }}</p>
+          {% if product.compare_at_price %}
+            <p class="dismised">Rs. {{ product.compare_at_price | money_without_currency | remove: ',' }}</p>
+          {% endif %}
           <p>Rs. {{ product.price | money_without_currency | remove: ',' }}</p>
         </label>
         {% if image_2 %}
@@ -135,7 +152,7 @@
     class="cod-button btn-wobble cod-btn-bottom"
     style="--text-color: {{ block.settings.text_color | default: '#eee3e3' }}; --bg-color: {{ block.settings.bg_color | default: '#1c1b1b' }};"
   >
-    {{ block.settings.title }}
+    {{ block.settings.title }} v1
   </button>
 
   <style>
@@ -253,7 +270,7 @@
           <fieldset>
             <label for="cod-address">Delivery Address *</label>
             <div class="input-with-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 8.4666669 8.4666669">
+              <svg style="align-self:start; margin-top:15px;" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 8.4666669 8.4666669">
                 <defs id="defs2"/>
 
                 <g id="layer1" transform="translate(0,-288.53332)">
@@ -271,9 +288,9 @@
                 rows="6"
               ></textarea>
             </div>
-            <button type="button" class="auto-fill btn-wobble" id="auto-fill-address">
+            {% comment %} <button type="button" class="auto-fill btn-wobble" id="auto-fill-address">
               Auto Fill Location with GPS
-            </button>
+            </button> {% endcomment %}
           </fieldset>
           <fieldset>
             <label for="cod-city">City *</label>
@@ -330,7 +347,7 @@
       </span>
       <span id="message-text"></span>
       <a class="btn-wobble"
-        href="https://wa.me/923217182164?text=Hi"
+        href="https://wa.me/923196838577?text=Hi"
         id="whatsapp-btn" target="_blank"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 32 32" fill="none">

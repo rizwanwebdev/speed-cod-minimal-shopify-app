@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(overlay);
   document.body.appendChild(btnBottom);
   console.log(
-    "%c For any web development or shopify related project hire me at contact@rizwanweb.site or check out my portfolio https://rizwanweb.site",
+    "%c For any web development or shopify related project hire me at hey@rizwan.one or check out my portfolio https://rizwan.one",
     "font-weight: bold; font-size: 14px;color: rgb(2,135,206); text-shadow: 3px 3px 0 rgb(2,135,206)  15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)",
   );
 
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         content_type: "product",
       };
       fbq("track", "Purchase", eventData);
-      console.log("Meta Pixel Purchase event fired with data:", eventData);
+      // console.log("Meta Pixel Purchase event fired with data:", eventData);
     } else {
       // console.log("fbq not defined yet, retrying Purchase track in 200ms...");
       setTimeout(
@@ -168,130 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const autoFillBtn = document.getElementById("auto-fill-address");
-
-  autoFillBtn.addEventListener("click", getUserAddress);
-  let userLatitude = null;
-  let userLongitude = null;
-  async function getUserAddress() {
-    const addressField = document.getElementById("cod-address");
-    const cityField = document.getElementById("cod-city");
-
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported.");
-      return;
-    }
-
-    autoFillBtn.disabled = true;
-    autoFillBtn.textContent = "Waiting For Permission...";
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        let seconds = 10;
-
-        autoFillBtn.textContent = `Getting Address... (${seconds}s)`;
-
-        // Start countdown AFTER permission + GPS success
-        const countdown = setInterval(() => {
-          seconds--;
-
-          if (seconds > 0) {
-            autoFillBtn.textContent = `Getting Address... (${seconds}s)`;
-          }
-        }, 1000);
-
-        try {
-          const { latitude, longitude } = position.coords;
-          userLatitude = latitude;
-          userLongitude = longitude;
-
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
-          );
-
-          const data = await response.json();
-
-          console.log("Location Response:", data);
-
-          // Full address
-          const fullAddress = data.display_name || "";
-
-          // Better city fallback handling
-          const city =
-            data.address.city ||
-            data.address.town ||
-            data.address.village ||
-            data.address.municipality ||
-            data.address.county ||
-            "";
-
-          // Fill fields
-          if (addressField) {
-            addressField.value = fullAddress;
-          }
-
-          if (cityField) {
-            cityField.value = city;
-          }
-
-          clearInterval(countdown);
-
-          autoFillBtn.textContent = "Address Filled";
-        } catch (error) {
-          console.error(error);
-
-          clearInterval(countdown);
-
-          autoFillBtn.textContent = "Failed To Fetch";
-        } finally {
-          autoFillBtn.disabled = false;
-
-          setTimeout(() => {
-            autoFillBtn.textContent = "Auto Fill Location With GPS";
-          }, 2000);
-        }
-      },
-      (error) => {
-        console.error(error);
-
-        let message = "Unable to get location.";
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            message = "Location permission denied.";
-            break;
-
-          case error.POSITION_UNAVAILABLE:
-            message = "Location unavailable.";
-            break;
-
-          case error.TIMEOUT:
-            message = "Location request timed out.";
-            break;
-        }
-
-        alert(message);
-
-        autoFillBtn.disabled = false;
-        autoFillBtn.textContent = "Location Failed";
-
-        setTimeout(() => {
-          autoFillBtn.textContent = "Auto Fill Location With GPS";
-        }, 2000);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
-  }
+ 
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const formData = Object.fromEntries(new FormData(form).entries());
-    console.log(formData)
+    // console.log(formData)
     // Ensure quantity defaults to 1 if not selected
     if (!formData.quantity) {
       formData.quantity = "1";
@@ -300,8 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set the price: use the selected bundle price (newPrice) or fallback to base product price
     formData.price = newPrice || formData.product_price || "";
 
-    // Send only coordinates in the note field if available, otherwise empty
-    formData.note = (userLatitude && userLongitude) ? `${userLatitude},${userLongitude}` : "";
 
     if (!formData.name || !formData.phone || !formData.address) {
       showMessage("error", "Please fill in all required fields");
@@ -332,10 +213,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         result = await res.json();
-        console.log(result)
+        // console.log(result)
       } catch (parseError) {
         const text = await res.text().catch(() => "");
-        console.log(text)
+        // console.log(text)
         // console.log("Raw response text:", text);
         // console.error("Failed to parse JSON from server:", parseError);
         throw new Error(`Server returned invalid data. Status: ${res.status}`);
@@ -371,9 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const url = new URL(whatsappBtn.href);
           const baseUrl = `${url.origin}${url.pathname}`;
-          whatsappBtn.href = `${baseUrl}?text=order%20no.%20${encodeURIComponent(result.orderName)}`;
+          whatsappBtn.href = `${baseUrl}?text=Order%20${encodeURIComponent(result.orderName)}%0ACan%20i%20get%20more%20info%3F`;
+          console.log(baseUrl);
         } catch (e) {
-          whatsappBtn.href = `https://wa.me/923217182164?text=order%20no.%20${encodeURIComponent(result.orderName)}`;
+          whatsappBtn.href = `https://wa.me/923196838577?text=Order%20${encodeURIComponent(result.orderName)}%0ACan%20i%20get%20more%20info%3F`;
         }
       }
 
