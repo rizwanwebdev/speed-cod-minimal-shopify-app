@@ -23,3 +23,29 @@ use the above query in graphQL editor to get the app id and replace in `/block/p
 ```JavaScript
 {% assign app_ns = 'app--408590942209' %}
 ```
+
+
+how to exchange access token
+
+```
+https://{shop}.com/admin/oauth/authorize
+  ?client_id=YOUR_API_KEY
+  &redirect_uri=https://example-redirect.com/api/auth
+```
+
+
+then exchange the code
+
+```js
+`https://{shop}.myshopify.com/admin/oauth/access_token`
+
+// header Content-Type: application/json
+
+// Body JSON
+
+{
+  "client_id": "YOUR_API_KEY",
+  "client_secret": "YOUR_API_SECRET_KEY",
+  "code": "THE_CODE_FROM_QUERY_STRING"
+}
+```
